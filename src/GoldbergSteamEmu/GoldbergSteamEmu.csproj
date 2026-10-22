@@ -36,6 +36,10 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Settings\GoldbergPluginSettings.cs" />
+    <Compile Include="UI\GoldbergSettingsView.xaml.cs">
+      <DependentUpon>GoldbergSettingsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GoldbergSteamEmuPlugin.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -56,6 +60,10 @@
     <Compile Include="UI\RelayCommand.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="UI\GoldbergSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\GoldbergEmuWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
