@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows;
 using Playnite.SDK;
+using Playnite.SDK.Events;      // <-- necessário para OnApplicationStartedEventArgs
 using Playnite.SDK.Plugins;
 
 namespace GoldbergSteamEmu
@@ -30,7 +30,9 @@ namespace GoldbergSteamEmu
 
         public override IEnumerable<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs args)
         {
-            var game = args.Games?.Count > 0 ? args.Games[0] : null;
+            if (args.Games == null || args.Games.Count == 0) yield break;
+
+            var game = args.Games[0];
             if (game == null || !game.IsInstalled) yield break;
 
             yield return new GameMenuItem
