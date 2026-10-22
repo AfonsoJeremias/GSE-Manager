@@ -1,0 +1,32 @@
+<UserControl x:Class="GoldbergSteamEmu.UI.GoldbergSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="White" Foreground="Black">
+    <StackPanel Margin="16" Background="White">
+        <TextBlock Text="GSE Manager — Configurações Globais" FontSize="16" FontWeight="Bold"
+                   Margin="0,0,0,16" Foreground="Black"/>
+
+        <GroupBox Header="Conta Steam" Margin="0,0,0,12" Padding="8" Foreground="Black">
+            <StackPanel>
+                <CheckBox x:Name="ChkAnon" Content="Usar conta anónima" Margin="0,0,0,8" Foreground="Black"/>
+                <TextBlock Text="Username:" Foreground="Black"/>
+                <TextBox x:Name="TxtUsername" Margin="0,2,0,6" IsEnabled="{Binding IsChecked, ElementName=ChkAnon, Converter={StaticResource InverseBoolConverter}}"/>
+                <TextBlock Text="Password:" Foreground="Black"/>
+                <PasswordBox x:Name="TxtPassword" Margin="0,2,0,6" IsEnabled="{Binding IsChecked, ElementName=ChkAnon, Converter={StaticResource InverseBoolConverter}}"/>
+                <TextBlock Text="(As credenciais são guardadas com DPAPI do Windows — encriptadas por utilizador.)"
+                           FontSize="11" Foreground="Gray" TextWrapping="Wrap"/>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Conteúdo" Margin="0,0,0,12" Padding="8" Foreground="Black">
+            <StackPanel>
+                <CheckBox x:Name="ChkAcw" Content="Implantar Achievement Watcher" Foreground="Black"/>
+                <TextBlock Text="Versão do emulador:" Margin="0,8,0,2" Foreground="Black"/>
+                <ComboBox x:Name="CmbVersion" SelectedIndex="0">
+                    <ComboBoxItem Content="release"/>
+                    <ComboBoxItem Content="debug"/>
+                </ComboBox>
+            </StackPanel>
+        </GroupBox>
+    </StackPanel>
+</UserControl>
