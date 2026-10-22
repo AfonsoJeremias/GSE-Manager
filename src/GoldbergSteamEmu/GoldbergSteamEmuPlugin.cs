@@ -21,21 +21,38 @@ namespace GoldbergSteamEmu
         public GoldbergSteamEmuPlugin(IPlayniteAPI api) : base(api)
         {
             Properties = new GenericPluginProperties { HasSettings = true };
+
+            try
+            {
+                PluginInstallPath = Path.GetDirectoryName(typeof(GoldbergSteamEmuPlugin).Assembly.Location);
+                PluginDataPath = GetPluginUserDataPath();
+                Directory.CreateDirectory(PluginDataPath);
+                Settings = GoldbergPluginSettings.Load(Path.Combine(PluginDataPath, "settings.json"));
+                Logger.Info("GSE Manager inicializado. Install=" + PluginInstallPath + ", Data=" + PluginDataPath);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Falha na inicialização do GSE Manager");
+                Settings = new GoldbergPluginSettings();
+            }
         }
 
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
-            PluginInstallPath = Path.GetDirectoryName(typeof(GoldbergSteamEmuPlugin).Assembly.Location);
-            PluginDataPath = GetPluginUserDataPath();
-            Directory.CreateDirectory(PluginDataPath);
-
-            Settings = GoldbergPluginSettings.Load(Path.Combine(PluginDataPath, "settings.json"));
-            Logger.Info($"GSE Manager carregado. Install: {PluginInstallPath}, Data: {PluginDataPath}");
+            Logger.Info("GSE Manager OnApplicationStarted");
         }
 
         public void SaveSettings()
         {
-            Settings?.Save(Path.Combine(PluginDataPath, "settings.json"));
+            try
+            {
+                if (Settings != null && !string.IsNullOrEmpty(PluginDataPath))
+                    Settings.Save(Path.Combine(PluginDataPath, "settings.json"));
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Falha ao guardar as settings");
+            }
         }
 
         public override ISettings GetSettings(bool firstRunSettings)
@@ -62,8 +79,8 @@ namespace GoldbergSteamEmu
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error(ex, "Falha ao abrir a janela GSE Manager");
-                        PlayniteApi.Dialogs.ShowErrorMessage($"Erro: {ex.Message}", "GSE Manager");
+                        Logger.Error(ex, "Falha ao abrir janela GSE Manager");
+                        PlayniteApi.Dialogs.ShowErrorMessage("Erro: " + ex.Message, "GSE Manager");
                     }
                 }
             };
