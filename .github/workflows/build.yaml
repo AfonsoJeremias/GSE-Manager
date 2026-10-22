@@ -1,0 +1,55 @@
+name: Build GSE Manager
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v2
+
+    - name: Restore
+      run: nuget restore src/GoldbergSteamEmu/GoldbergSteamEmu.csproj
+
+    - name: Build
+      run: msbuild src/GoldbergSteamEmu/GoldbergSteamEmu.csproj /p:Configuration=Release /p:Platform=AnyCPU
+
+    - name: Install Playnite
+      run: winget install --id Playnite.Playnite --silent --accept-package-agreements --accept-source-agreements
+      shell: pwsh
+
+    - name: Locate Toolbox.exe
+      id: find-toolbox
+      run: |
+        $tb = Get-ChildItem -Path "C:\Program Files\Playnite", "$env:LOCALAPPDATA\Playnite" -Filter "Toolbox.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $tb) { throw "Toolbox.exe not found" }
+        echo "toolbox=$($tb.FullName)" >> $env:GITHUB_OUTPUT
+      shell: pwsh
+
+    - name: Copy lib and resources to output
+      run: |
+        $out = "src/GoldbergSteamEmu/bin/Release"
+        New-Item -ItemType Directory -Force -Path $out | Out-Null
+        # Copiar o CONTEÚDO de lib e resources, não as pastas em si
+        Copy-Item "lib/*" -Destination $out -Recurse -Force
+        Copy-Item "resources/*" -Destination $out -Recurse -Force
+      shell: pwsh
+
+    - name: Pack .pext
+      run: |
+        & "${{ steps.find-toolbox.outputs.toolbox }}" pack "src/GoldbergSteamEmu/bin/Release" "dist"
+      shell: pwsh
+
+    - uses: actions/upload-artifact@v4
+      with:
+        name: GSEManager
+        path: dist/*.pext

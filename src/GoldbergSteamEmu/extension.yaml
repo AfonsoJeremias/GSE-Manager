@@ -1,0 +1,10 @@
+Id: GoldbergSteamEmu_a1b2c3d4-e5f6-7890-abcd-ef1234567890
+Name: GSE Manager
+Author: Afonso Jeremias
+Version: 1.0.0
+Module: GoldbergSteamEmu.dll
+Type: GenericPlugin
+Icon: icon.png
+Links:
+  - Name: GitHub
+    Url: https://github.com/AfonsoJeremias/GSE-Manager

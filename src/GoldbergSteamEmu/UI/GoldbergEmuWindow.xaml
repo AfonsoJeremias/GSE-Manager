@@ -1,0 +1,54 @@
+<Window x:Class="GoldbergSteamEmu.UI.GoldbergEmuWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GSE Manager" Height="600" Width="800" WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#EEE" Padding="10" Margin="0,0,0,10">
+            <StackPanel>
+                <TextBlock Text="{Binding StateText}" FontSize="14" FontWeight="Bold"/>
+                <TextBlock Text="{Binding AppId, StringFormat='AppID: {0}'}" Margin="0,5,0,0"/>
+                <CheckBox Content="Usar conta anónima" IsChecked="{Binding UseAnon}" Margin="0,5,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <TabControl Grid.Row="1">
+            <TabItem Header="DLLs">
+                <ListBox ItemsSource="{Binding Dlls}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox IsChecked="{Binding Selected}" Margin="0,0,8,0"/>
+                                <TextBlock Text="{Binding Path}"/>
+                                <TextBlock Text="{Binding Arch, StringFormat=' [{0}]'}" Foreground="Gray"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+            <TabItem Header="Conta">
+                <StackPanel Margin="10">
+                    <TextBlock Text="Username:" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Username}" Margin="0,0,0,8"/>
+                    <TextBlock Text="Password:" Margin="0,0,0,4"/>
+                    <PasswordBox x:Name="PwdBox" Margin="0,0,0,8"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Avançado">
+                <StackPanel Margin="10">
+                    <CheckBox Content="Implantar Achievement Watcher" IsChecked="{Binding AcwEnabled}"/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Aplicar Goldberg" Command="{Binding ApplyCommand}" Width="140" Margin="0,0,8,0" Padding="4"/>
+            <Button Content="Restaurar Original" Command="{Binding RestoreCommand}" Width="140" Padding="4"/>
+        </StackPanel>
+    </Grid>
+</Window>
