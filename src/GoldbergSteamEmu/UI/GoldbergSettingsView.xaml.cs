@@ -1,6 +1,5 @@
-using System.IO;
+using System.Collections.Generic;
 using System.Windows.Controls;
-using Playnite.SDK;
 using GoldbergSteamEmu.Settings;
 
 namespace GoldbergSteamEmu.UI
@@ -20,8 +19,8 @@ namespace GoldbergSteamEmu.UI
         {
             var s = _plugin.Settings ?? new GoldbergPluginSettings();
             ChkAnon.IsChecked = s.UseAnon;
-            TxtUsername.Text = s.Username;
-            TxtPassword.Password = s.Password;
+            TxtUsername.Text = s.Username ?? string.Empty;
+            TxtPassword.Password = s.Password ?? string.Empty;
             ChkAcw.IsChecked = s.DeployAchievementWatcher;
             CmbVersion.SelectedIndex = s.EmuVersion == "debug" ? 1 : 0;
         }
@@ -37,8 +36,8 @@ namespace GoldbergSteamEmu.UI
         {
             var s = _plugin.Settings ?? new GoldbergPluginSettings();
             s.UseAnon = ChkAnon.IsChecked == true;
-            s.Username = TxtUsername.Text;
-            s.Password = TxtPassword.Password;
+            s.Username = TxtUsername.Text ?? string.Empty;
+            s.Password = TxtPassword.Password ?? string.Empty;
             s.DeployAchievementWatcher = ChkAcw.IsChecked == true;
             s.EmuVersion = (CmbVersion.SelectedIndex == 1) ? "debug" : "release";
 
@@ -46,8 +45,19 @@ namespace GoldbergSteamEmu.UI
             _plugin.SaveSettings();
         }
 
-        public UserControl GetView(GetSettingsViewArgs args) { return this; }
+        public bool VerifySettings(out List<string> errors)
+        {
+            errors = new List<string>();
 
-        public void Dispose() { }
+            if (ChkAnon.IsChecked == false)
+            {
+                if (string.IsNullOrWhiteSpace(TxtUsername.Text))
+                    errors.Add("O username não pode estar vazio quando a conta anónima está desativada.");
+                if (string.IsNullOrWhiteSpace(TxtPassword.Password))
+                    errors.Add("A password não pode estar vazia quando a conta anónima está desativada.");
+            }
+
+            return errors.Count == 0;
+        }
     }
 }
