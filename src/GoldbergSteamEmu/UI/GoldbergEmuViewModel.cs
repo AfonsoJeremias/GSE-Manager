@@ -36,19 +36,34 @@ namespace GoldbergSteamEmu.UI
 
         public ObservableCollection<DllItemViewModel> Dlls { get; } = new ObservableCollection<DllItemViewModel>();
 
-        private string _stateText;
+        private string _stateText = "Estado: a iniciar...";
         public string StateText
         {
             get { return _stateText; }
             set { _stateText = value; OnPropertyChanged(); }
         }
 
-        private string _appId;
+        private string _stateDetail = "";
+        public string StateDetail
+        {
+            get { return _stateDetail; }
+            set { _stateDetail = value; OnPropertyChanged(); }
+        }
+
+        private string _appId = "";
         public string AppId
         {
             get { return _appId; }
-            set { _appId = value; OnPropertyChanged(); }
+            set
+            {
+                _appId = value;
+                OnPropertyChanged();
+                OnPropertyChanged("AppIdDisplay");
+            }
         }
+
+        public string AppIdDisplay =>
+            string.IsNullOrEmpty(AppId) ? "AppID: (a detetar...)" : "AppID: " + AppId;
 
         private bool _useAnon = true;
         public bool UseAnon
@@ -82,14 +97,24 @@ namespace GoldbergSteamEmu.UI
         public bool CanApply
         {
             get { return _canApply; }
-            set { _canApply = value; OnPropertyChanged(); }
+            set
+            {
+                _canApply = value;
+                OnPropertyChanged();
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
 
         private bool _canRestore;
         public bool CanRestore
         {
             get { return _canRestore; }
-            set { _canRestore = value; OnPropertyChanged(); }
+            set
+            {
+                _canRestore = value;
+                OnPropertyChanged();
+                CommandManager.InvalidateRequerySuggested();
+            }
         }
 
         public ICommand ApplyCommand { get; }
@@ -107,6 +132,17 @@ namespace GoldbergSteamEmu.UI
             _ = InitializeAsync();
         }
 
+        private static string StateToLabel(EmulatorState s)
+        {
+            switch (s)
+            {
+                case EmulatorState.Original: return "Original (sem emulador)";
+                case EmulatorState.Deployed: return "Emulador aplicado";
+                case EmulatorState.Dirty:    return "Inconsistente — precisa de reparar";
+                default:                     return "Desconhecido";
+            }
+        }
+
         private async Task InitializeAsync()
         {
             try
@@ -114,14 +150,17 @@ namespace GoldbergSteamEmu.UI
                 var installDir = _game.InstallDirectory;
                 if (string.IsNullOrEmpty(installDir) || !Directory.Exists(installDir))
                 {
-                    StateText = string.Format("Pasta do jogo inválida: {0}", installDir);
+                    StateText = "Estado: pasta do jogo inválida";
+                    StateDetail = installDir ?? "(vazio)";
                     CanApply = false;
                     CanRestore = false;
                     return;
                 }
 
                 var st = Services.StateDetectionService.Detect(installDir);
-                StateText = st.Message;
+                StateText = "Estado: " + StateToLabel(st.State);
+                StateDetail = st.Message ?? "";
+
                 CanApply = st.State == EmulatorState.Original || st.State == EmulatorState.Dirty;
                 CanRestore = st.State == EmulatorState.Deployed || st.State == EmulatorState.Dirty;
 
@@ -131,16 +170,15 @@ namespace GoldbergSteamEmu.UI
                 }
 
                 if (Dlls.Count == 0)
-                {
-                    StateText += " (nenhuma DLL Steam encontrada)";
-                }
+                    StateDetail = (StateDetail + " (nenhuma DLL Steam encontrada)").Trim();
 
                 var appIdRes = await Services.AppIdResolver.ResolveAsync(installDir, _game.Name, _game.GameId);
                 AppId = appIdRes.AppId ?? string.Empty;
             }
             catch (Exception ex)
             {
-                StateText = "Erro: " + ex.Message;
+                StateText = "Estado: erro na deteção";
+                StateDetail = ex.Message;
                 CanApply = false;
                 CanRestore = false;
                 GoldbergSteamEmuPlugin.Logger.Error(ex, "InitializeAsync falhou");
@@ -161,7 +199,6 @@ namespace GoldbergSteamEmu.UI
                         Password = Password,
                         DeployAchievementWatcher = AcwEnabled
                     };
-
                     var outputDir = Path.Combine(installDir, "_OUTPUT", AppId);
 
                     var res = Services.PipelineOrchestrator.Apply(
@@ -190,7 +227,6 @@ namespace GoldbergSteamEmu.UI
                 try
                 {
                     var res = Services.PipelineOrchestrator.Restore(_game.InstallDirectory, s => { });
-
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         if (res.Success)
