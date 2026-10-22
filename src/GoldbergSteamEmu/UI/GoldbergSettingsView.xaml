@@ -1,32 +1,39 @@
 <UserControl x:Class="GoldbergSteamEmu.UI.GoldbergSettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             Background="White" Foreground="Black">
-    <StackPanel Margin="16" Background="White">
-        <TextBlock Text="GSE Manager — Configurações Globais" FontSize="16" FontWeight="Bold"
-                   Margin="0,0,0,16" Foreground="Black"/>
+             Background="#1E1E1E" Foreground="#EEEEEE">
+    <StackPanel Margin="16">
+        <TextBlock Text="GSE Manager — Configurações Globais"
+                   FontSize="16" FontWeight="Bold" Margin="0,0,0,16" Foreground="#FFFFFF"/>
 
-        <GroupBox Header="Conta Steam" Margin="0,0,0,12" Padding="8" Foreground="Black">
+        <Border Background="#2D2D30" BorderBrush="#3F3F46" BorderThickness="1"
+                Padding="12" Margin="0,0,0,12">
             <StackPanel>
-                <CheckBox x:Name="ChkAnon" Content="Usar conta anónima" Margin="0,0,0,8" Foreground="Black"/>
-                <TextBlock Text="Username:" Foreground="Black"/>
-                <TextBox x:Name="TxtUsername" Margin="0,2,0,6" IsEnabled="{Binding IsChecked, ElementName=ChkAnon, Converter={StaticResource InverseBoolConverter}}"/>
-                <TextBlock Text="Password:" Foreground="Black"/>
-                <PasswordBox x:Name="TxtPassword" Margin="0,2,0,6" IsEnabled="{Binding IsChecked, ElementName=ChkAnon, Converter={StaticResource InverseBoolConverter}}"/>
+                <TextBlock Text="Conta Steam" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,8"/>
+                <CheckBox x:Name="ChkAnon" Content="Usar conta anónima" Margin="0,0,0,8" Foreground="#EEEEEE"/>
+                <TextBlock Text="Username:" Foreground="#EEEEEE"/>
+                <TextBox x:Name="TxtUsername" Margin="0,2,0,8" Padding="4"
+                         Background="#1E1E1E" Foreground="#EEEEEE" BorderBrush="#3F3F46"/>
+                <TextBlock Text="Password:" Foreground="#EEEEEE"/>
+                <PasswordBox x:Name="TxtPassword" Margin="0,2,0,8" Padding="4"
+                             Background="#1E1E1E" Foreground="#EEEEEE" BorderBrush="#3F3F46"/>
                 <TextBlock Text="(As credenciais são guardadas com DPAPI do Windows — encriptadas por utilizador.)"
-                           FontSize="11" Foreground="Gray" TextWrapping="Wrap"/>
+                           FontSize="11" Foreground="#888888" TextWrapping="Wrap"/>
             </StackPanel>
-        </GroupBox>
+        </Border>
 
-        <GroupBox Header="Conteúdo" Margin="0,0,0,12" Padding="8" Foreground="Black">
+        <Border Background="#2D2D30" BorderBrush="#3F3F46" BorderThickness="1"
+                Padding="12" Margin="0,0,0,12">
             <StackPanel>
-                <CheckBox x:Name="ChkAcw" Content="Implantar Achievement Watcher" Foreground="Black"/>
-                <TextBlock Text="Versão do emulador:" Margin="0,8,0,2" Foreground="Black"/>
-                <ComboBox x:Name="CmbVersion" SelectedIndex="0">
+                <TextBlock Text="Conteúdo" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,0,0,8"/>
+                <CheckBox x:Name="ChkAcw" Content="Implantar Achievement Watcher" Foreground="#EEEEEE"/>
+                <TextBlock Text="Versão do emulador:" Margin="0,10,0,4" Foreground="#EEEEEE"/>
+                <ComboBox x:Name="CmbVersion" SelectedIndex="0"
+                          Background="#1E1E1E" Foreground="#EEEEEE" BorderBrush="#3F3F46">
                     <ComboBoxItem Content="release"/>
                     <ComboBoxItem Content="debug"/>
                 </ComboBox>
             </StackPanel>
-        </GroupBox>
+        </Border>
     </StackPanel>
 </UserControl>
