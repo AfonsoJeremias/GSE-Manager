@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace GoldbergSteamEmu.Services
 {
@@ -9,7 +8,7 @@ namespace GoldbergSteamEmu.Services
     {
         public EmulatorState State { get; set; }
         public GoldbergManifest Manifest { get; set; }
-        public bool ManifestMissing => Manifest == null;
+        public bool ManifestMissing { get { return Manifest == null; } }
         public string Message { get; set; }
     }
 
@@ -37,21 +36,27 @@ namespace GoldbergSteamEmu.Services
             if (res.Manifest != null && res.Manifest.State == 1)
             {
                 res.State = EmulatorState.Deployed;
-                res.Message = "Goldberg aplicado (manifest encontrado).";
+                res.Message = "Manifest do emulador encontrado.";
                 return res;
             }
 
-            if (liveDlls == 0) { res.State = EmulatorState.Unknown; res.Message = "Nenhuma DLL Steam encontrada."; return res; }
+            if (liveDlls == 0)
+            {
+                res.State = EmulatorState.Unknown;
+                res.Message = "Nenhuma DLL Steam encontrada na pasta do jogo.";
+                return res;
+            }
 
-            if (bakCount == 0 && subBackupCount == 0 && !File.Exists(Path.Combine(installDir, "steam_settings", "emu_version.txt")))
+            var ssVersionFile = Path.Combine(installDir, "steam_settings", "emu_version.txt");
+            if (bakCount == 0 && subBackupCount == 0 && !File.Exists(ssVersionFile))
             {
                 res.State = EmulatorState.Original;
-                res.Message = "Estado 0: sem vestígios de Goldberg.";
+                res.Message = "Nenhum vestígio de Goldberg detetado.";
                 return res;
             }
 
             res.State = EmulatorState.Dirty;
-            res.Message = "Estado inconsistente — reparar necessário.";
+            res.Message = "Vestígios encontrados sem manifest — reparar necessário.";
             return res;
         }
     }
