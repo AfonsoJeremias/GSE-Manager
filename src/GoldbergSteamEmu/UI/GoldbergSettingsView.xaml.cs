@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Windows.Controls;
+using Playnite.SDK;                    // <-- necessário para ISettings
 using GoldbergSteamEmu.Settings;
 
 namespace GoldbergSteamEmu.UI
